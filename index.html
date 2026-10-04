@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Senin İçin ❤️</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff8fb1"/><stop offset="1" stop-color="#e0245e"/></linearGradient>
+<symbol id="hrt" viewBox="-2 -2 36 34"><path d="M16 29C-9 12 6-4 16 6c10-10 25 6 0 23z" fill="url(#hg)"/></symbol>
+</defs></svg>
+
+<template id="pandaT">
+
+<svg class="panda" viewBox="0 0 200 210" role="img" aria-label="Sevimli panda" data-mood="normal">
+  <g class="hero"><path d="M52 118Q16 190 40 214L100 200 160 214Q184 190 148 118Z" fill="#d1103a"/><path d="M40 214L100 200 160 214" stroke="#1b2a6b" stroke-width="6" fill="none" stroke-linecap="round"/></g>
+  <ellipse cx="100" cy="175" rx="54" ry="36" fill="#fff" stroke="#f0d4de" stroke-width="2"/>
+  <g class="hero"><circle cx="100" cy="180" r="13" fill="#1b2a6b"/><path d="M100 169V191M90 174L110 186M110 174L90 186M92 172Q100 178 108 172" stroke="#ff4d6d" stroke-width="1.6" fill="none"/></g>
+
+  <ellipse cx="52" cy="170" rx="16" ry="26" fill="#2b2b33" transform="rotate(25 52 170)"/>
+  <ellipse cx="148" cy="170" rx="16" ry="26" fill="#2b2b33" transform="rotate(-25 148 170)"/>
+  <circle cx="44" cy="40" r="24" fill="#2b2b33"/><circle cx="156" cy="40" r="24" fill="#2b2b33"/>
+  <ellipse cx="100" cy="95" rx="80" ry="68" fill="#fff" stroke="#f0d4de" stroke-width="2"/>
+  <ellipse cx="68" cy="92" rx="17" ry="22" fill="#2b2b33" transform="rotate(20 68 92)"/>
+  <ellipse cx="132" cy="92" rx="17" ry="22" fill="#2b2b33" transform="rotate(-20 132 92)"/>
+  <g class="v normal shy"><circle cx="68" cy="92" r="6.5" fill="#fff"/><circle cx="69" cy="93" r="3.6" fill="#2b2b33"/><circle cx="132" cy="92" r="6.5" fill="#fff"/><circle cx="131" cy="93" r="3.6" fill="#2b2b33"/></g>
+  <g class="v sad"><circle cx="68" cy="94" r="9" fill="#fff"/><circle cx="68" cy="96" r="6" fill="#2b2b33"/><circle cx="65" cy="93" r="2.4" fill="#fff"/><circle cx="132" cy="94" r="9" fill="#fff"/><circle cx="132" cy="96" r="6" fill="#2b2b33"/><circle cx="129" cy="93" r="2.4" fill="#fff"/><path d="M54 74L82 66M146 74L118 66" stroke="#2b2b33" stroke-width="4" stroke-linecap="round"/></g>
+  <path class="v happy" d="M58 96Q68 82 78 96M122 96Q132 82 142 96" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <g class="v happy shy"><ellipse cx="46" cy="118" rx="12" ry="7" fill="#ff8fb1" opacity=".6"/><ellipse cx="154" cy="118" rx="12" ry="7" fill="#ff8fb1" opacity=".6"/></g>
+  <ellipse cx="100" cy="112" rx="10" ry="7" fill="#2b2b33"/>
+  <path class="v normal" d="M90 123Q100 131 110 123" stroke="#2b2b33" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path class="v happy" d="M86 121Q100 150 114 121Z" fill="#ff7b9c" stroke="#2b2b33" stroke-width="3" stroke-linejoin="round"/>
+  <path class="v sad" d="M91 133Q100 122 109 133" stroke="#2b2b33" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <path class="v shy" d="M94 124Q100 129 106 124" stroke="#2b2b33" stroke-width="3" fill="none" stroke-linecap="round"/>
+</svg>
+</template>
+
+<div id="deep"></div>
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="webs" aria-hidden="true"><svg class="web w1" viewBox="0 0 200 200"></svg><svg class="web w2" viewBox="0 0 200 200"></svg><svg class="web w3" viewBox="0 0 200 200"></svg><svg class="web w4" viewBox="0 0 200 200"></svg></div>
+<!-- Müzik Butonu ve Ses Dosyası -->
+<button id="musicBtn" style="position:fixed; top:16px; right:16px; z-index:99; background:rgba(255,255,255,0.85); border:1px solid rgba(224,36,94,0.3); padding:8px 16px; border-radius:50px; cursor:pointer; font-size:0.85rem; font-weight:bold; color:var(--dark-pink); box-shadow:0 4px 12px rgba(0,0,0,0.1); backdrop-filter:blur(4px);">
+   Müzik Çal
+</button>
+<audio id="bgMusic" loop src="sarki.mp3"></audio>
+<!-- Müzik ve Ses Seviyesi Kontrolü -->
+<div id="musicControls" style="position:fixed; top:16px; right:16px; z-index:9999; display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.92); border:1px solid rgba(224,36,94,0.3); padding:8px 14px; border-radius:50px; box-shadow:0 4px 12px rgba(0,0,0,0.15); backdrop-filter:blur(6px);">
+  <button id="musicBtn" type="button" style="background:none; border:none; cursor:pointer; font-size:0.85rem; font-weight:bold; color:var(--dark-pink); padding:0;">
+    🎵 Müzik Çal
+  </button>
+  <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.8" style="width:60px; accent-color:var(--dark-pink); cursor:pointer;" title="Ses Seviyesi">
+</div>
+
+<audio id="bgMusic" loop preload="auto" src="sarki.mp3"></audio>
+
+<audio id="bgMusic" loop preload="auto" src="sarki.mp3"></audio>
+
+<audio id="bgMusic" loop preload="auto" src="sarki.mp3"></audio>
+
+<audio id="bgMusic" loop preload="auto">
+  <source src="sarki.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="bgMusic" loop src="sarki.mp3"></audio>
+<main>
+  <!-- Giriş -->
+  <section class="screen" id="intro"><div class="wrap">
+    <svg class="heart beat" viewBox="-2 -2 36 34" aria-hidden="true"><use href="#hrt"/></svg>
+    <p class="lead fade" id="t1">Senin için küçük bir şey hazırladım...</p>
+    <p class="lead fade" id="t2"><span data-cfg="girlfriendName"></span>, hazır mısın?</p>
+    <button class="btn fade" id="t3" data-go="q1">Başlamak için dokun</button>
+  </div></section>
+
+  <!-- Birinci soru -->
+  <section class="screen" id="q1"><div class="wrap">
+    <div data-panda></div>
+    <p class="lead reveal" style="--i:1">Panda sana çok önemli bir soru soracak...</p>
+    <h2 class="reveal" style="--i:5">Beni seviyor musun?</h2>
+    <div id="answers" class="answers reveal" style="--i:8">
+      <button class="btn" id="yesBtn">EVET</button>
+      <button class="btn ghost" id="noBtn">HAYIR</button>
+    </div>
+    <p class="lead fade" id="reply"></p>
+    <button class="btn fade" id="giveIn">EVET</button>
+    <p class="lead fade" id="reply2">Çünkü ben de seni çooooook seviyorum.</p>
+    <button class="btn fade" id="next1" data-go="q2">Devam et →</button>
+  </div></section>
+
+  <!-- İkinci soru -->
+  <section class="screen" id="q2"><div class="wrap">
+    <div data-panda></div>
+    <p class="lead reveal" style="--i:1">Peki...</p>
+    <h2 class="reveal" style="--i:5">Benimle daha nice güzel anılar biriktirmeye var mısın?</h2>
+    <button class="btn reveal" style="--i:9" data-go="story">Her zaman</button>
+  </div></section>
+
+  <!-- Hikâyemiz -->
+  <section class="screen" id="story"><div class="wrap">
+    <h2 class="reveal">Bizim Hikâyemiz ❤️</h2>
+    <p class="date reveal" style="--i:2" data-cfg="meetingDate"></p>
+    <!-- Birlikte Geçen Süre Sayacı -->
+<div class="card reveal" style="--i:3; padding: 12px 20px; margin: 10px 0;">
+  <span style="font-size: 0.85rem; opacity: 0.8; font-weight: 600;">Birlikte Geçirdiğimiz Süre:</span>
+  <div id="counter" style="font-size: 1.15rem; font-weight: bold; color: var(--dark-pink); margin-top: 4px;">
+    Hesaplanıyor...
+  </div>
+</div>
+    <div class="tl">
+      <div class="card tl-item reveal" style="--i:4"><span class="ic"></span><h3>Birbirimizi ilk gördüğümüz gün</h3><p data-cfg="storyTexts.firstMeeting"></p></div>
+      <div class="card tl-item reveal" style="--i:8"><span class="ic"></span><h3>İlk Güzel Anımız</h3><p data-cfg="storyTexts.firstMemory"></p></div>
+      <div class="card tl-item reveal" style="--i:12"><span class="ic"></span><h3>Tartışmalarımız</h3><p data-cfg="storyTexts.today"></p></div>
+    </div>
+    <button class="btn reveal" style="--i:16" data-go="gallery">Devam et →</button>
+  </div></section>
+
+  <!-- Galeri -->
+  <section class="screen" id="gallery"><div class="wrap wide">
+    <h2 class="reveal">Bizden Küçük Anlar</h2>
+    <div class="grid reveal" style="--i:2" id="grid"></div>
+    <button class="btn reveal" style="--i:5" data-go="message">Devam et →</button>
+  </div></section>
+
+  <!-- Mesaj -->
+  <section class="screen" id="message"><div class="wrap">
+    <div class="card big">
+      <h2>Bir şey söylemek istiyorum...</h2>
+      <p id="typed" class="typed" aria-live="polite"></p>
+    </div>
+    <button class="btn fade" id="nextMsg" data-go="surprise">Devam et →</button>
+  </div></section>
+
+  <!-- Sürpriz -->
+  <section class="screen" id="surprise"><div class="wrap">
+    <h2 class="reveal">Sana Özel Bir Video...
+
+    </h2>
+    
+    <!-- Video Kutusu -->
+    <div class="card big reveal" style="--i:4; padding: 8px; overflow: hidden; width: 100%;">
+      <video id="spideyVideo" controls style="width: 100%; border-radius: 16px; display: block;">
+        <source src="videos/spidey.mp4" type="video/mp4">
+        Tarayıcın video oynatmayı desteklemiyor.
+      </video>
+    </div>
+
+    <p class="lead reveal" style="--i:6">Hazırsan devam edelim</p>
+    <button class="btn reveal" style="--i:9" id="surpriseBtn">Sürprizi aç ❤️</button>
+  </div></section>
+
+  <!-- Final -->
+  <section class="screen" id="final"><div class="wrap">
+    <svg class="heart glow reveal" viewBox="-2 -2 36 34" aria-hidden="true"><use href="#hrt"/></svg>
+    <h2 class="reveal" style="--i:6">Seni çooooook seviyorum. ❤️</h2>
+    <p class="lead reveal" style="--i:14">İyi ki varsın, <span data-cfg="girlfriendName"></span>.</p>
+    <p class="lead reveal" style="--i:20" data-cfg="finalMessage"></p>
+    <p class="lead reveal" style="--i:26">Şimdiye kadar hissettirdiğin tüm güzel hisler için sana minnettarım.</p>
+    <h2 class="reveal" style="--i:32">İyi ki biz.</h2>
+    <p class="sign reveal" style="--i:34">— <span data-cfg="myName"></span></p>
+    <a class="btn ghost reveal" style="--i:36" id="songBtn" href="#" target="_blank" rel="noopener" hidden>Benden sana</a>
+    <button class="btn ghost reveal" style="--i:38" id="restartBtn">Baştan tekrar yaşa ↻</button>
+  </div></section>
+</main>
+
+<!-- Lightbox -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Fotoğraf" hidden>
+  <button class="lb-close" id="lbClose" aria-label="Kapat">✕</button>
+  <img id="lbImg" alt="">
+  <div class="empty">Fotoğraf burada olacak ❤️</div>
+  <p id="lbCap"></p>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
