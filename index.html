@@ -40,30 +40,14 @@
 <div id="deep"></div>
 <canvas id="fx" aria-hidden="true"></canvas>
 <div class="webs" aria-hidden="true"><svg class="web w1" viewBox="0 0 200 200"></svg><svg class="web w2" viewBox="0 0 200 200"></svg><svg class="web w3" viewBox="0 0 200 200"></svg><svg class="web w4" viewBox="0 0 200 200"></svg></div>
-<!-- Müzik Butonu ve Ses Dosyası -->
-<button id="musicBtn" style="position:fixed; top:16px; right:16px; z-index:99; background:rgba(255,255,255,0.85); border:1px solid rgba(224,36,94,0.3); padding:8px 16px; border-radius:50px; cursor:pointer; font-size:0.85rem; font-weight:bold; color:var(--dark-pink); box-shadow:0 4px 12px rgba(0,0,0,0.1); backdrop-filter:blur(4px);">
-   Müzik Çal
-</button>
-<audio id="bgMusic" loop src="sarki.mp3"></audio>
 <!-- Müzik ve Ses Seviyesi Kontrolü -->
 <div id="musicControls" style="position:fixed; top:16px; right:16px; z-index:9999; display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.92); border:1px solid rgba(224,36,94,0.3); padding:8px 14px; border-radius:50px; box-shadow:0 4px 12px rgba(0,0,0,0.15); backdrop-filter:blur(6px);">
   <button id="musicBtn" type="button" style="background:none; border:none; cursor:pointer; font-size:0.85rem; font-weight:bold; color:var(--dark-pink); padding:0;">
     🎵 Müzik Çal
   </button>
-  <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.8" style="width:60px; accent-color:var(--dark-pink); cursor:pointer;" title="Ses Seviyesi">
+  <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.8" style="width:90px; accent-color:var(--dark-pink); cursor:pointer;" title="Ses Seviyesi" aria-label="Ses seviyesi">
 </div>
-
 <audio id="bgMusic" loop preload="auto" src="sarki.mp3"></audio>
-
-<audio id="bgMusic" loop preload="auto" src="sarki.mp3"></audio>
-
-<audio id="bgMusic" loop preload="auto" src="sarki.mp3"></audio>
-
-<audio id="bgMusic" loop preload="auto">
-  <source src="sarki.mp3" type="audio/mpeg">
-</audio>
-
-<audio id="bgMusic" loop src="sarki.mp3"></audio>
 <main>
   <!-- Giriş -->
   <section class="screen" id="intro"><div class="wrap">
@@ -119,7 +103,26 @@
   <section class="screen" id="gallery"><div class="wrap wide">
     <h2 class="reveal">Bizden Küçük Anlar</h2>
     <div class="grid reveal" style="--i:2" id="grid"></div>
-    <button class="btn reveal" style="--i:5" data-go="message">Devam et →</button>
+    <button class="btn reveal" style="--i:5" data-go="coupons">Devam et →</button>
+  </div></section>
+
+  <!-- Kuponlar -->
+  <section class="screen" id="coupons"><div class="wrap wide">
+    <h2 class="reveal">Kupon Kitapçığı 🎟️</h2>
+    <p class="lead reveal" style="--i:2">Sadece bir tane seçebilirsin</p>
+    <div class="cgrid reveal" style="--i:4" id="couponGrid"></div>
+    <button class="btn reveal" style="--i:7" data-go="scratch">Devam et →</button>
+  </div></section>
+
+    <!-- Kazı kazan -->
+  <section class="screen" id="scratch"><div class="wrap">
+    <h2 class="reveal">Bir şey daha var...</h2>
+    <p class="lead reveal" style="--i:2">Bak bakalım altında ne yazıyor</p>
+    <div class="scratch reveal" style="--i:4" id="scratchBox">
+      <p id="scratchText" class="scratch-text"></p>
+      <canvas id="scratchCv" aria-label="Kazınacak alan"></canvas>
+    </div>
+    <button class="btn fade" id="scratchNext" data-go="message">Devam et →</button>
   </div></section>
 
   <!-- Mesaj -->

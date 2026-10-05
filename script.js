@@ -3,7 +3,7 @@ const CONFIG = {
   girlfriendName: "Aleyna",
   myName: "Hakkı",
   meetingDate: "14 Mayıs 2026",
-  songUrl: "https://youtu.be/NymaaLyBzIU", // boşsa şarkı butonu görünmez
+  songUrl: "https://youtu.be/rUKMIsDOT4Y", // boşsa şarkı butonu görünmez
   finalMessage: "Sen benim için çok değerlisin.",
   storyTexts: {
     firstMeeting: "14.05.2026 tarihinde ilk kez oyun oynadık.",
@@ -15,6 +15,15 @@ const CONFIG = {
     "Seninle güldüğüm, konuştuğum ve geçirdiğim her an benim için çok değerli.\n" +
     "Belki bunu her zaman söylemiyorum ama seni gerçekten çok seviyorum.\n" +
     "İyi ki varsın. ❤️",
+  scratchMessage: "Aramızda kilometreler olsa da kalbim hep yanında ❤️",
+  coupons: [
+    "Bir gün senin seçtiğin bir filmi izleriz",
+    "Bir gün benden istediğin bir şeyi 'hayır' demeden yaparım",
+    "Bir gece sabaha kadar seninle sohbet ederim",
+    "Bir akşam sadece senin zevkine göre müzik dinleriz",
+    "Bir gün boyunca sadece senin sevdiğin şeylerden konuşuruz",
+    "Sana bir şiir yazarım",
+  ],
   photos: [
     { src: "images/spidey-love.jpg", alt: "Spider-Man", caption: "Bütün evrenlerdeki en favori insanımsın" },
     { src: "images/foto1.jpg", alt: "Birlikte fotoğrafımız 1", caption: "İlk oynadığımız oyun" },
@@ -32,7 +41,7 @@ const RM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const K = RM ? 0.25 : 1;
 const CHAR_MS = RM ? 6 : 45;
 const NO_LINES = ["Emin misin? 🥺", "Bir daha düşün... 👉👈", "Bence cevabını biliyorsun... ❤️", "Hayır demene izin vermiyorum artık 😭", "Ben hallederim. 🕸️🐼"];
-const FX = { gallery: 0.8, message: 0.6, surprise: 0.45, final: 0.6 };
+const FX = { gallery: 0.8, scratch: 0.7, coupons: 0.7, message: 0.6, surprise: 0.45, final: 0.6 };
 
 let current = "intro", noCount = 0;
 const noBtn = $("#noBtn");
@@ -188,7 +197,7 @@ function startFinal() {
 function stopFinal() { emitFinal = false; clearScope("final"); }
 
 /* ---------- Bölüm geçişleri ---------- */
-const hooks = { message: startTypewriter, final: startFinal };
+const hooks = { message: startTypewriter, final: startFinal, scratch: initScratch };
 const leaves = {
   intro: () => clearScope("intro"),
   q1: () => { clearScope("q1"); $$(".bubble,.sling").forEach(e => e.remove()); fadeTemp(); },
@@ -365,6 +374,7 @@ function handleSurprise() {
 
 /* ---------- Baştan başla ---------- */
 function resetExperience() {
+  $$(".coupon.open").forEach(c => c.classList.remove("open")); pandaBase = null;
   clearAllTimers(); stopTypewriter(); stopFinal();
   noCount = 0; ambLevel = 1;
   document.body.classList.remove("final", "settled");
@@ -403,10 +413,87 @@ function startLiveCounter() {
   setInterval(updateCounter, 1000);
 }
 
+/* ---------- Kazı kazan ---------- */
+let scratchDone = false, scratchDraw = false, scratchLast = null, scratchTick = 0;
+function buildScratch() {
+  const c = $("#scratchCv"); if (!c) return;
+  c.addEventListener("pointerdown", e => { scratchDraw = true; scratchLast = null; c.setPointerCapture(e.pointerId); scratchAt(e); });
+  c.addEventListener("pointermove", e => { if (scratchDraw) scratchAt(e); });
+  const end = () => { scratchDraw = false; scratchLast = null; if (!scratchDone) checkScratch(c); };
+  c.addEventListener("pointerup", end); c.addEventListener("pointercancel", end);
+}
+function initScratch() {
+  const box = $("#scratchBox"), c = $("#scratchCv"); if (!box || !c) return;
+  $("#scratchText").textContent = CONFIG.scratchMessage;
+  scratchDone = false; box.classList.remove("done");
+  const w = box.clientWidth, h = box.clientHeight, d = Math.min(devicePixelRatio || 1, 2);
+  c.width = w * d; c.height = h * d;
+  const g = c.getContext("2d"); g.setTransform(d, 0, 0, d, 0, 0); g.globalCompositeOperation = "source-over";
+  const grad = g.createLinearGradient(0, 0, w, h);
+  grad.addColorStop(0, "#ffb3c9"); grad.addColorStop(0.5, "#e6d9ff"); grad.addColorStop(1, "#ff8fb1");
+  g.fillStyle = grad; g.fillRect(0, 0, w, h);
+  g.fillStyle = "rgba(255,255,255,.8)"; g.font = "700 22px Georgia, serif"; g.textAlign = "center"; g.textBaseline = "middle";
+  g.fillText("✨ Kazı ✨", w / 2, h / 2);
+  later(() => $("#scratchNext").classList.add("show"), 12000, "scratch"); // so nobody gets stuck
+}
+function scratchAt(e) {
+  if (scratchDone) return;
+  const c = e.currentTarget, r = c.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, g = c.getContext("2d");
+  g.globalCompositeOperation = "destination-out"; g.lineWidth = 36; g.lineCap = "round"; g.beginPath();
+  const p = scratchLast || { x, y }; g.moveTo(p.x, p.y); g.lineTo(x, y); g.stroke(); scratchLast = { x, y };
+  const now = performance.now();
+  if (now - scratchTick > 200) { scratchTick = now; checkScratch(c); }
+}
+function checkScratch(c) {
+  const data = c.getContext("2d").getImageData(0, 0, c.width, c.height).data; let clear = 0, total = 0;
+  for (let i = 3; i < data.length; i += 64) { total++; if (data[i] < 128) clear++; }
+  if (clear / total > 0.5) revealScratch();
+}
+function revealScratch() {
+  if (scratchDone) return; scratchDone = true;
+  const box = $("#scratchBox"), r = box.getBoundingClientRect();
+  box.classList.add("done"); confetti(r.left + r.width / 2, r.top + r.height / 2, 36, PALS[1]);
+  later(() => $("#scratchNext").classList.add("show"), 1200, "scratch");
+}
+
+/* ---------- Kupon kitapçığı ---------- */
+function buildCoupons() {
+  const grid = $("#couponGrid"); if (!grid) return;
+  CONFIG.coupons.forEach((text, i) => {
+    const b = document.createElement("button"); b.className = "coupon"; b.type = "button";
+    b.setAttribute("aria-expanded", "false");
+    b.innerHTML = '<span class="cf"><b>🎟️</b>Kupon ' + (i + 1) + '<small>Açmak için dokun</small></span><span class="cb"></span>';
+    b.querySelector(".cb").textContent = text;
+    b.onclick = () => {
+      const open = b.classList.toggle("open"); b.setAttribute("aria-expanded", open);
+      if (open) { const r = b.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, 12, PALS[0]); }
+    };
+    grid.appendChild(b);
+  });
+}
+
+/* ---------- Pandaya dokununca tepki ---------- */
+const TAPS = [["shy", "Hihi, gıdıklanıyorum! 🙈"], ["happy", "Bana dokunmaya bayılıyorsun 😌"], ["happy", "Seni çok seviyorum ❤️"], ["sad", "Yeter ama... 🥺"], ["normal", "Zzz... 💤"]];
+let pandaTaps = 0, pandaBase = null;
+function handlePandaTap(e) {
+  const panda = e.target.closest(".panda"); if (!panda) return;
+  if (current === "q1" && noCount > 0 && !answersGone()) return; // HAYIR sırasında karışmasın
+  const r = panda.getBoundingClientRect(), x = r.left + r.width / 2, i = pandaTaps++ % TAPS.length;
+  if (pandaBase === null) pandaBase = panda.dataset.mood;
+  setMood(TAPS[i][0]); bubble(TAPS[i][1], x, r.top);
+  const box = panda.parentElement; box.classList.remove("tapwig"); void box.offsetWidth; box.classList.add("tapwig");
+  box.addEventListener("animationend", () => box.classList.remove("tapwig"), { once: true });
+  if (i === 2) for (let k = 0; k < 6; k++) createHeart(x + rand(-40, 40), r.top + 30, { vx: rand(-0.4, 0.4), vy: -rand(0.6, 1.2), life: 90, a: 0.9 });
+  if (i === 4) spawn("💤", x + 36, r.top + 24, { s: 22, vx: 0.2, vy: -0.5, life: 100, a: 0.9 });
+  clearScope("panda");
+  later(() => { setMood(pandaBase || "normal"); pandaBase = null; }, 1500, "panda");
+}
+
 /* ---------- Uygulama Başlatma ---------- */
 function init() {
-  buildWeb(); fillConfig(); buildPandas(); buildGallery(); resize(); seedAmbient(); requestAnimationFrame(frame); startIntro(); startLiveCounter();
+  buildWeb(); fillConfig(); buildPandas(); buildGallery(); buildCoupons(); buildScratch(); resize(); seedAmbient(); requestAnimationFrame(frame); startIntro(); startLiveCounter();
 
+  document.addEventListener("click", handlePandaTap);
   $$("[data-go]").forEach(b => b.addEventListener("click", () => showSection(b.dataset.go)));
   $("#yesBtn")?.addEventListener("click", handleYes);
   $("#giveIn")?.addEventListener("click", handleYes);
@@ -454,15 +541,3 @@ function init() {
 }
 
 addEventListener("DOMContentLoaded", init);
-
-/* ---------- Spider-Man Ağ Fırlatma (Thwip!) Efekti ---------- */
-addEventListener("click", (e) => {
-  if (e.target.closest("button, a, .ph, input")) return; 
-  const w = document.createElement("div");
-  w.className = "bubble";
-  w.textContent = "THWIP! 🕸️";
-  w.style.left = e.clientX + "px";
-  w.style.top = e.clientY + "px";
-  document.body.appendChild(w);
-  setTimeout(() => w.remove(), 1000);
-});
